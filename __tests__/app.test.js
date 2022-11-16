@@ -2,8 +2,14 @@ const pool = require('../lib/utils/pool');
 const setup = require('../data/setup');
 // const request = require('supertest');
 // const app = require('../lib/app');
+const UserService = require('../lib/services/UserService');
 
-describe('backend-express-template routes', () => {
+const dumbUser = {
+  email: 'Hello@example.com',
+  password: 'SECRET PASSWORD',
+};
+
+describe('', () => {
   beforeEach(() => {
     return setup(pool);
   });
