@@ -24,7 +24,16 @@ describe('top-secret-routes', () => {
     });
   });
 
-  afterAll(() => {
-    pool.end();
+  it('POST /api/v1/users/sessions to log in a user', async () => {
+    await await request(app).post('/api/v1/users').send(dumbUser);
+    const res = await request(app).post('/api/v1/users/sessions').send({
+      email: 'Test@test.com',
+      password: 'TEST PASSWORD',
+    });
+    expect(res.status).toBe(200);
   });
+});
+
+afterAll(() => {
+  pool.end();
 });
