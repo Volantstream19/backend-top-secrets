@@ -9,6 +9,17 @@ const dumbUser = {
   password: 'SECRET PASSWORD',
 };
 
+// const login = async (userProps = {}) => {
+//   const password = userProps.password ?? dumbUser.password;
+
+//   const agent = request.agent(app);
+//   const user = await UserService.create({ ...dumbUser, ...userProps });
+
+//   const { email } = user;
+//   await agent.post('/api/v1/users/sessions').send({ email, password });
+//   return [agent, user];
+// };
+
 describe('top-secret-routes', () => {
   beforeEach(() => {
     return setup(pool);
@@ -25,12 +36,12 @@ describe('top-secret-routes', () => {
   });
 
   it('POST /api/v1/users/sessions to log in a user', async () => {
-    await await request(app).post('/api/v1/users').send(dumbUser);
+    await request(app).post('/api/v1/users').send(dumbUser);
     const res = await request(app).post('/api/v1/users/sessions').send({
-      email: 'Test@test.com',
-      password: 'TEST PASSWORD',
+      email: 'Hello@example.com',
+      password: 'SECRET PASSWORD',
     });
-    expect(res.status).toBe(200);
+    expect(res.status).toEqual(200);
   });
 });
 
