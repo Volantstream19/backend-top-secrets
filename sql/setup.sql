@@ -15,3 +15,9 @@ CREATE TABLE users (
   email TEXT NOT NULL UNIQUE,
   password_hash TEXT NOT NULL
 );
+
+INSERT 
+into secrets (title, description)
+VALUES 
+('Bed wetter', 'pissed the bed'),
+('Missle codes', 'These codes contain all missles!!!!!!!!!!!');

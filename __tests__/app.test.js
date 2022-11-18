@@ -56,6 +56,14 @@ describe('top-secret-routes', () => {
   });
 });
 
+it('POST Secret should post a Secret', async () => {
+  await request(app)
+    .post('/api/v1/secrets')
+    .send({ title: 'New secret', description: 'description' });
+  const resp = await request(app).get('/api/v1/secrets');
+  expect(resp.status).toBe(401);
+});
+
 afterAll(() => {
   pool.end();
 });
