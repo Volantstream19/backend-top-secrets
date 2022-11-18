@@ -57,11 +57,27 @@ describe('top-secret-routes', () => {
 });
 
 it('POST Secret should post a Secret', async () => {
-  await request(app)
-    .post('/api/v1/secrets')
-    .send({ title: 'New secret', description: 'description' });
-  const resp = await request(app).get('/api/v1/secrets');
-  expect(resp.status).toBe(200);
+  const agent = request.agent(app);
+  await UserService.create({ ...dumbUser });
+  await agent
+    .post('/api/v1/users/sessions')
+    .send({ email: 'Hello@example1.com', password: 'SECRET PASSWORD' });
+
+  const resp = await agent.get('/api/v1/secrets');
+  expect(resp.body).toEqual([
+    {
+      id: expect.any(String),
+      title: expect.any(String),
+      description: expect.any(String),
+      created_at: expect.any(String),
+    },
+    {
+      id: expect.any(String),
+      title: expect.any(String),
+      description: expect.any(String),
+      created_at: expect.any(String),
+    },
+  ]);
 });
 
 afterAll(() => {
