@@ -1,16 +1,85 @@
 const pool = require('../lib/utils/pool');
 const setup = require('../data/setup');
-// const request = require('supertest');
-// const app = require('../lib/app');
+const request = require('supertest');
+const app = require('../lib/app');
+const UserService = require('../lib/services/UserService.js');
+// const UserService = require('../lib/services/UserService');
 
-describe('backend-express-template routes', () => {
+const dumbUser = {
+  email: 'Hello@example.com',
+  password: 'SECRET PASSWORD',
+};
+
+// const login = async (userProps = {}) => {
+//   const password = userProps.password ?? dumbUser.password;
+
+//   const agent = request.agent(app);
+//   const user = await UserService.create({ ...dumbUser, ...userProps });
+
+//   const { email } = user;
+//   await agent.post('/api/v1/users/sessions').send({ email, password });
+//   return [agent, user];
+// };
+
+describe('top-secret-routes', () => {
   beforeEach(() => {
     return setup(pool);
   });
-  it('example test - delete me!', () => {
-    expect(1).toEqual(1);
+
+  it('POST  email, password  to /api/v1/users creates a new user', async () => {
+    const res = await request(app).post('/api/v1/users').send(dumbUser);
+    const { email } = dumbUser;
+
+    expect(res.body).toEqual({
+      id: expect.any(String),
+      email,
+    });
   });
-  afterAll(() => {
-    pool.end();
+
+  it('POST /api/v1/users/sessions to log in a user', async () => {
+    await request(app).post('/api/v1/users').send(dumbUser);
+    const res = await request(app).post('/api/v1/users/sessions').send({
+      email: 'Hello@example.com',
+      password: 'SECRET PASSWORD',
+    });
+    expect(res.status).toEqual(200);
   });
+
+  it('DELETE /api/v1/sessions signs out a user', async () => {
+    const agent = request.agent(app);
+    await UserService.create({ ...dumbUser });
+    await agent
+      .post('/api/v1/users/sessions')
+      .send({ email: 'Hello@example.com', password: 'SECRET PASSWORD' });
+    const resp = await agent.delete('/api/v1/users/sessions');
+    expect(resp.status).toBe(204);
+  });
+});
+
+it('POST Secret should post a Secret', async () => {
+  const agent = request.agent(app);
+  await UserService.create({ ...dumbUser });
+  await agent
+    .post('/api/v1/users/sessions')
+    .send({ email: 'Hello@example1.com', password: 'SECRET PASSWORD' });
+
+  const resp = await agent.get('/api/v1/secrets');
+  expect(resp.body).toEqual([
+    {
+      id: expect.any(String),
+      title: expect.any(String),
+      description: expect.any(String),
+      created_at: expect.any(String),
+    },
+    {
+      id: expect.any(String),
+      title: expect.any(String),
+      description: expect.any(String),
+      created_at: expect.any(String),
+    },
+  ]);
+});
+
+afterAll(() => {
+  pool.end();
 });
